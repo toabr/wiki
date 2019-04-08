@@ -1,0 +1,12 @@
+h1, p {
+  font-family: Lato;
+}
+code, pre {
+  background: #fafafa;
+  padding: 3px;
+  /* white-space: pre-wrap;  */
+  overflow-x: auto;
+}
+ul {
+  padding-left: 1.2em;
+}
