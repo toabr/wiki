@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { withContext } from '../context';
 
 import ArticleListItem from './ArticleListItem';
 
@@ -12,23 +13,25 @@ import {
 
 
 const styles = theme => ({
+    paper: {
+        color: theme.palette.text.secondary,
+    },
 });
 
 const ArticleList = (props) => {
-    const { classes, nodes } = props;
+    const { classes } = props;
 
-    const article = nodes.map((node, i) => (
-        <Fragment key={i}>
+    const articles = props.nodes.map((node, i, arr) => (
+        <React.Fragment key={i}>
             <ArticleListItem node={node} />
-            <Divider />
-        </Fragment>
-    ));
+            {(i !== arr.length - 1) && <Divider /> }
+        </React.Fragment>
+        )
+    );
 
     return (
-        <Paper>
-            <List component="nav">
-                {article}
-            </List>
+        <Paper className={classes.paper}>
+            <List> {articles} </List>
         </Paper>
     );
 }
@@ -37,4 +40,4 @@ ArticleList.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ArticleList);
+export default withContext(withStyles(styles)(ArticleList));

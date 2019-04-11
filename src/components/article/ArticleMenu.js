@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { withContext } from '../../context';
+import { withContext } from '../context';
 
 import PropTypes from 'prop-types';
 import MoreIcon from '@material-ui/icons/MoreVert';
@@ -43,7 +43,7 @@ class ArticleMenu extends Component {
     };
 
     handleLike = () => {
-        this.props.toggleLike(this.props.nid);
+        this.props.toggleLike(this.props.nid, this.props.match.path);
         
         const liked = this.checkLike();
         this.setState({ liked });

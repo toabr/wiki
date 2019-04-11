@@ -1,5 +1,11 @@
 // custom helper functions
 
+export const handleLocalStore = ({ key, value }) => {
+    if (typeof (Storage) === "undefined") return;
+
+    if(key && value) localStorage.setItem(key, value);
+    return localStorage.getItem(key);
+}
 
 export const toLocalDate = (timeStamp) => {
     const date = new Date(timeStamp * 1000);

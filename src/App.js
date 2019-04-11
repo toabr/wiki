@@ -1,19 +1,20 @@
-import React, { Component, Fragment } from 'react';
-import { BrowserRouter as Router, Route, Switch, withRouter } from "react-router-dom";
-import { Provider } from './context'; 
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Provider } from './components/context'; 
 
-import auth from "./components/auth";
+import { handleLocalStore } from './js/helper';
+
 import SplashScreen from './components/SplashScreen';
 import Header from './components/Header';
 
-import Article from './components/routes/Article';
-
 // routes
 import Home from './components/routes/Home';
-import Liked from './components/routes/Liked';
+import Likes from './components/routes/Likes';
+import Recent from './components/routes/Recent';
 import Tag from './components/routes/Tag';
 import Tags from './components/routes/Tags';
-import LoginForm from './components/LoginForm';
+import Article from './components/routes/Article';
+import SearchResult from './components/routes/SearchResult';
 
 import PropTypes from 'prop-types';
 import { withStyles, Grid } from '@material-ui/core';
@@ -42,12 +43,15 @@ const styles = theme => ({
 class App extends Component {
   state = {
     headLine: 'Wiki',
+    isLoading: false,
     user: {
       id: 0,
       name: 'Guest',
     },
+    nodes: [],
     likedArticles: [],
-    history: [43, 69, 36],
+    recentArticles: [],
+    search: '',
     renderSplashscreen: true,
   }
 
@@ -56,43 +60,75 @@ class App extends Component {
     setTimeout(() => {
       this.setState({ renderSplashscreen: false });
     }, 500);
-    auth.getUserID(userID => this.setState({ userID }));
+
+    let likedArticles = handleLocalStore({key: 'likes'});
+    if(likedArticles) {
+      likedArticles = likedArticles.split(',');
+      this.setState({ likedArticles });
+    }
+
   }
 
-  handleLogOut = withRouter(
-    ({ history }) =>
-      auth.logout(() => {
-        console.log('### logout');
-        this.props.history.push("/");
-      })
-  );
+  updateNodes = (nodes) => {
+    this.setState({ nodes });
+  }
 
+  removeNode(nid) {
+    console.log('remove', nid);
+    const nodes = this.state.nodes.filter((node) => {
+      return node.nid !== nid;
+    });
+    this.setState({ nodes });
+  }
+  
+  loading = (isLoading) => {
+    this.setState({ isLoading });
+  }
 
-  toggleLike = (nid) => {
+  addRecent = (nid) => {
+    let recentArticles = this.state.recentArticles;
+    recentArticles.push(nid);
+    recentArticles = recentArticles.filter((v, i, a) => a.indexOf(v) === i);
+    this.setState({ recentArticles });
+  }
+
+  handleSearch = (search) => {
+    // console.log(this.props);
+    this.setState({ search });
+  }
+  
+  setHeadLine = (headLine) => {
+    this.setState({ headLine });
+  }
+  
+  toggleLike = (nid, path) => {
     let { likedArticles } = this.state;
     const index = likedArticles.indexOf(nid);
 
-    if (index >= 0) {
-      likedArticles.splice(index, 1);
-    }else {
+    if (index >= 0) { // unLike
+      likedArticles.splice(index, 1); // remove node from likedArticles
+      if(path === '/likes') this.removeNode(nid); // remove node from view
+    }else { // like
       likedArticles.push(nid);
     }
 
+    handleLocalStore({ key: 'likes', value: likedArticles });
     this.setState({ likedArticles });
   }
-
 
   share = nid => {
     console.log('share', nid);
   }
 
-
-  home = () => <Home endpoint="https://local.wiki/api/articles/" nids={[]} />;
-  liked = () => <Liked endpoint="https://local.wiki/api/articles/" nids={this.state.likedArticles} />;
-
   getContext = () => ({
-    share: this.share,
+    addRecent: this.addRecent,
+    handleSearch: this.handleSearch,
+    loading: this.loading,
+    removeNode: this.removeNode,
+    updateNodes: this.updateNodes,
+    setHeadLine: this.setHeadLine,
     toggleLike: this.toggleLike,
+    share: this.share,
     ...this.state,
   });
 
@@ -100,21 +136,22 @@ class App extends Component {
     const { classes } = this.props;
     return (
       <Router>
-        <SplashScreen open={this.state.renderSplashscreen} minLiveTime={1000} />
+        <SplashScreen open={this.state.renderSplashscreen} minLiveTime={2000} />
 
           {!this.state.renderSplashscreen &&
           <Provider value={this.getContext()}>
-            <Header headline={this.state.headLine} />
+            <Header />
 
             <Grid container className={classes.root}>
               <Grid item xs={12}>
                 <Switch>
-                  <Route exact path="/" component={this.home} />
+                  <Route exact path="/" component={Home} />
                   <Route exact path="/tags" component={Tags} />
-                  <Route exact path="/liked" component={this.liked} />
+                  <Route exact path="/likes" component={Likes} />
+                  <Route exact path="/recent" component={Recent} />
                   <Route path="/tag/:tid" component={Tag} />
                   <Route path="/article/:nid" component={Article} />
-                  <Route path="/login" component={LoginForm} />
+                  <Route path="/search" component={SearchResult} />
                   <Route path="*" component={() => "404 NOT FOUND"} />
                 </Switch>
               </Grid>

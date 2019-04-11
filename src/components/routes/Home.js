@@ -1,25 +1,30 @@
 import React, { Component, Fragment } from 'react'
-import { nodeReq } from '../api';
+import { nodeReq } from '../../js/api';
 import ArticleList from '../article/ArticleList';
+import { withContext } from '../context';
 
 
-export default class Home extends Component {
-    state = {
-        nodes: [],
-    }
+class Home extends Component {
 
     componentDidMount() {
-        nodeReq({
-            endpoint: this.props.endpoint,
-            ids: this.props.nids,
-        }, nodes => {
-            this.setState({ nodes });
+        this.props.setHeadLine('');
+        
+        this.props.loading(true);
+        nodeReq([], nodes => {
+            this.props.updateNodes(nodes);
+            this.props.loading(false);
         });
     }
 
     render() {
         return (
-            <ArticleList nodes={this.state.nodes} />
+            <Fragment>
+                {!this.props.isLoading && this.props.nodes.length > 0 &&
+                    <ArticleList />
+                }
+            </Fragment>
         )
     }
 }
+
+export default withContext(Home);

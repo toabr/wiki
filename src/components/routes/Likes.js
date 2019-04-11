@@ -1,12 +1,10 @@
-import React, { Component, Fragment } from 'react';
-import { withContext } from '../context';
-
-import { tagReq, termReq } from '../../js/api'
+import React, { Component, Fragment } from 'react'
+import { nodeReq } from '../../js/api';
 import ArticleList from '../article/ArticleList';
+import { withContext } from '../context';
 
 import PropTypes from 'prop-types';
 import { withStyles, Typography } from '@material-ui/core';
-
 
 const styles = theme => ({
     headline: {
@@ -15,15 +13,19 @@ const styles = theme => ({
     }
 });
 
-class Tag extends Component {
+class Likes extends Component {
 
     componentDidMount() {
-        const tid = this.props.match.params.tid;
+        this.props.setHeadLine('Likes');
 
-        termReq(tid, term => this.props.setHeadLine('#' + term[0].title) );
-
+        if (this.props.likedArticles.length === 0) { // empty array => all nodes
+            this.props.updateNodes([]);
+            return;
+        }
+        
+        this.props.updateNodes([]);
         this.props.loading(true);
-        tagReq(tid, nodes => {
+        nodeReq(this.props.likedArticles, nodes => {
             this.props.updateNodes(nodes);
             this.props.loading(false);
         });
@@ -31,7 +33,6 @@ class Tag extends Component {
 
     render() {
         const { classes } = this.props;
-
         return (
             <Fragment>
                 <Typography
@@ -41,7 +42,7 @@ class Tag extends Component {
                     className={classes.headline} >
                     {this.props.headLine}
                 </Typography>
-                {!this.props.isLoading &&
+                {!this.props.isLoading && this.props.nodes.length > 0 &&
                     <ArticleList />
                 }
             </Fragment>
@@ -49,8 +50,8 @@ class Tag extends Component {
     }
 }
 
-Tag.propTypes = {
+Likes.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withContext(withStyles(styles)(Tag));
+export default withContext(withStyles(styles)(Likes));

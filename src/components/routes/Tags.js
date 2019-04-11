@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link } from "react-router-dom";
+import { withContext } from '../context';
 
-import { orderByTitle } from '../helper';
+import { termReq } from '../../js/api'
+import { orderByTitle } from '../../js/helper';
 
 import PropTypes from 'prop-types';
-import { withStyles, Button, Paper } from '@material-ui/core';
+import { withStyles, Button, Paper, Typography } from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -15,6 +17,10 @@ const styles = theme => ({
   button: {
     margin: theme.spacing.unit / 2,
   },
+  headline: {
+    marginBottom: theme.spacing.unit,
+    marginTop: theme.spacing.unit,
+  },
 });
 
 class TagList extends Component {
@@ -23,13 +29,13 @@ class TagList extends Component {
   };
   
   componentDidMount() {
-    fetch('https://local.wiki/api/tag/tags')
-    .then(res => res.json())
-    .then(tags => {
-      this.setState({tags});
-      // console.log(tags);
-    })
-    .catch(err => console.log('ERROR', err));
+    this.props.setHeadLine('Tags');
+
+    this.props.loading(true);
+    termReq('', tags => {
+      this.setState({ tags });
+      this.props.loading(false);
+    });
   }
 
   render() {
@@ -44,15 +50,26 @@ class TagList extends Component {
           className={classes.button}
           component={Link}
           to={`/tag/${tag.tid}`}>
-          {tag.title}
+          {'#' + tag.title}
         </Button>
       );
     });
 
     return (
-      <Paper className={classes.paper}>
-        {tags}
-      </Paper>
+      <Fragment>
+        <Typography
+          component="h2"
+          variant="h4"
+          color="textSecondary"
+          className={classes.headline} >
+          {this.props.headLine}
+        </Typography>
+        {!this.props.isLoading &&
+          <Paper className={classes.paper}>
+            {tags}
+          </Paper>
+        }
+      </Fragment>
     );
   }
 }
@@ -61,4 +78,4 @@ TagList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TagList);
+export default withContext(withStyles(styles)(TagList));

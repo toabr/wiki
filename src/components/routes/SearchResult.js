@@ -1,12 +1,11 @@
-import React, { Component, Fragment } from 'react';
-import { withContext } from '../context';
+import React, { Component, Fragment } from 'react'
 
-import { tagReq, termReq } from '../../js/api'
+import { searchReq } from '../../js/api';
 import ArticleList from '../article/ArticleList';
+import { withContext } from '../context';
 
 import PropTypes from 'prop-types';
 import { withStyles, Typography } from '@material-ui/core';
-
 
 const styles = theme => ({
     headline: {
@@ -15,15 +14,27 @@ const styles = theme => ({
     }
 });
 
-class Tag extends Component {
+class SearchResult extends Component {
 
     componentDidMount() {
-        const tid = this.props.match.params.tid;
+        this.search();
+    }
 
-        termReq(tid, term => this.props.setHeadLine('#' + term[0].title) );
+    componentDidUpdate(oldProps) {
+        const newProps = this.props;
+        if (oldProps.search !== newProps.search) {
+            // this.setState({ open: false })
+            this.search();
+            console.log('new props');
+        }
+    }
+    
+    search = () => {
+        this.props.setHeadLine(`search: ${this.props.search}`);
+        if (this.props.search === '') return; // block empty search
 
         this.props.loading(true);
-        tagReq(tid, nodes => {
+        searchReq(this.props.search, nodes => {
             this.props.updateNodes(nodes);
             this.props.loading(false);
         });
@@ -31,7 +42,6 @@ class Tag extends Component {
 
     render() {
         const { classes } = this.props;
-
         return (
             <Fragment>
                 <Typography
@@ -41,16 +51,16 @@ class Tag extends Component {
                     className={classes.headline} >
                     {this.props.headLine}
                 </Typography>
-                {!this.props.isLoading &&
+                {!this.props.isLoading && (this.props.nodes.length > 0) &&
                     <ArticleList />
                 }
             </Fragment>
-        );
+        )
     }
 }
 
-Tag.propTypes = {
+SearchResult.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withContext(withStyles(styles)(Tag));
+export default withContext(withStyles(styles)(SearchResult));

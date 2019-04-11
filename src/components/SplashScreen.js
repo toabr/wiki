@@ -1,20 +1,28 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
 import Logo from '../img/logo.jpg';
 
-import { withStyles, Dialog, DialogContent, Slide, Zoom, Fade, Grow } from '@material-ui/core';
+import { withStyles, Dialog, DialogContent, Slide, LinearProgress, Grid } from '@material-ui/core';
 
 
 const styles = theme => ({
     paper: {
         textAlign: 'center',
+        padding: theme.spacing.unit,
         background: theme.palette.primary.main,
-        padding: 0,
     },
     logo: {
         maxWidth: '100%',
-        maxHeight: '90%',
+        [theme.breakpoints.up('sm')]: {
+            maxHeight: '600px',
+        },
+        [theme.breakpoints.up('lg')]: {
+            maxHeight: '700px',
+        },
+    },
+    progress: {
+        // margin: theme.spacing.unit,
     },
     button: {
         margin: theme.spacing.unit / 2,
@@ -61,7 +69,8 @@ class SplashScreen extends Component {
                 transitionDuration={{ enter: 0, exit: 250 }}>
 
                 <DialogContent className={classes.paper} >
-                    <img src={Logo} className={classes.logo} />
+                    <img src={Logo} className={classes.logo} alt="Wiki - Logo" />
+                    <LinearProgress className={classes.progress} color="secondary" />
                 </DialogContent>
 
             </Dialog>

@@ -1,13 +1,11 @@
 import React from 'react';
-import { Link, withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
+import { withContext } from './context';
 
-import auth from "./auth";
+import Searchbar from './header/Searchbar';
 
 import PropTypes from 'prop-types';
-
 import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
 import HomeIcon from '@material-ui/icons/Home';
 import BookmarksIcon from '@material-ui/icons/Bookmarks';
 import StarIcon from '@material-ui/icons/Star';
@@ -15,18 +13,17 @@ import HistoryIcon from '@material-ui/icons/History';
 
 import {
   AppBar,
-  Toolbar,
-  SwipeableDrawer,
-  Typography,
-  Menu,
-  MenuItem,
+  Badge,
   Divider,
+  IconButton,
+  LinearProgress,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Button,
-  IconButton,
+  SwipeableDrawer,
+  Toolbar,
+  Typography,
   withStyles,
 } from '@material-ui/core';
 
@@ -46,29 +43,30 @@ const styles = theme => ({
     width: 250,
   },
   toolbar: theme.mixins.toolbar,
+  
 });
+
+const menu = [{
+  title: 'Home',
+  icon: <HomeIcon />,
+  route: '/'
+}, {
+  title: 'Tags',
+  icon: <BookmarksIcon />,
+  route: '/tags'
+}, {
+  title: 'Likes',
+  icon: <StarIcon />,
+  route: '/likes'
+}, {
+  title: 'Recent',
+  icon: <HistoryIcon />,
+  route: '/recent'
+}];
 
 class AppHeader extends React.Component {
   state = {
     drawer: false,
-    anchorEl: null,
-    menu: [{
-      title: 'Home',
-      icon: <HomeIcon />,
-      route: '/'
-    }, {
-      title: 'Tags',
-      icon: <BookmarksIcon />,
-      route: '/tags'
-    }, {
-      title: 'Liked',
-      icon: <StarIcon />,
-      route: '/liked'
-    }, {
-      title: 'History',
-      icon: <HistoryIcon />,
-      route: '/history'
-    }]
   };
 
   toggleDrawer = (open) => () => {
@@ -83,48 +81,34 @@ class AppHeader extends React.Component {
     this.setState({ anchorEl: null });
   };
 
-  handleLogOut = () => {
-    auth.logout(() => console.log('LogOut Successfull'));
-  }
-
   render() {
     const { classes } = this.props;
-    const { anchorEl } = this.state;
-    const open = Boolean(anchorEl);
-    const loggedIn = auth.isAuthenticated();
 
     // Drawer Menu
     const sideList = (
-      <div className={classes.list}>
-        <List>
-          {this.state.menu.map((item, index) => {
-            const ItemIcon = item.icon;
-            return(
+      <List className={classes.list}>
+        {menu.map((item) => {
+          const ItemIcon = item.icon;
+          return (
+            (item.title !== 'Likes') ?
               <ListItem button key={item.title} component={Link} to={item.route} >
                 <ListItemIcon>
                   {ItemIcon}
                 </ListItemIcon>
                 <ListItemText primary={item.title} />
               </ListItem>
-            );
-            })}
-        </List>
-
-        {loggedIn && (
-          <React.Fragment>
-            <Divider />
-            <List>
-              <ListItem button onClick={this.handleLogOut} >
-                <ListItemText primary="logout" />
+              :
+              <ListItem button key={item.title} component={Link} to={item.route} >
                 <ListItemIcon>
-                  <LockOpenIcon />
+                  <Badge color="secondary" badgeContent={this.props.likedArticles.length}>
+                    {ItemIcon}
+                  </Badge>
                 </ListItemIcon>
+                <ListItemText primary={item.title} />
               </ListItem>
-            </List>
-          </React.Fragment>
-        )}
-
-      </div>
+          );
+        })}
+      </List>
     );
 
     return (
@@ -156,46 +140,13 @@ class AppHeader extends React.Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              {this.props.headline}
+              {true &&
+                'WIKI'
+              } 
             </Typography>
-
-            {!loggedIn && (
-              <Button component={Link} to="/login" color="inherit">
-                Login
-              </Button>
-            )}
-
-            {loggedIn && (
-              <div>
-                <IconButton
-                  aria-owns={open ? 'menu-appbar' : undefined}
-                  aria-haspopup="true"
-                  onClick={this.handleMenu}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={open}
-                  onClose={this.handleClose}
-                >
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                </Menu>
-              </div>
-            )}
-
+            <Searchbar/>
           </Toolbar>
+          {this.props.isLoading && <LinearProgress color="secondary" />}
         </AppBar>
       </div>
     );
@@ -206,4 +157,4 @@ AppHeader.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(AppHeader);
+export default withContext(withStyles(styles)(AppHeader));

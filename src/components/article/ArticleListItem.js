@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Link } from "react-router-dom";
+import React from 'react';
+import { withRouter, Link } from "react-router-dom";
 
-import { toLocalDate, stripTags } from "./../helper";
+import { toLocalDate, stripTags } from "./../../js/helper";
 import ArticleMenu from './ArticleMenu';
 
 import PropTypes from 'prop-types';
@@ -17,22 +17,15 @@ import {
 const styles = theme => ({
 });
 
+const Menu = withRouter(props => <ArticleMenu {...props} />);
 
-class ArticleListItem extends Component {
-    state = {
-    }
+const ArticleListItem = (props) => {
 
-    render() {
-        const { classes, node } = this.props;
+        const { classes, node } = props;
 
-        const tags = stripTags(node.tags).map((tag, i, arr) => {
-            return (
-                <small key={i}>
-                    {tag.title}
-                    {(i === arr.length - 1) ? '' : ', '}
-                </small>
-            );
-        });
+        const tags = stripTags(node.tags).map((tag, i, arr) => 
+                <small key={i}> {'#' + tag.title} </small>
+        );
 
         return (
             <ListItem button key={node.nid} component={Link} to={`/article/${node.nid}`} >
@@ -41,12 +34,10 @@ class ArticleListItem extends Component {
                     secondary={<span>{toLocalDate(node.changed)}<br />{tags}</span>}
                 />
                 <ListItemSecondaryAction>
-                    <ArticleMenu nid={node.nid} />
+                    <Menu nid={node.nid} />
                 </ListItemSecondaryAction>
             </ListItem>
         );
-    }
-
 }
 
 ArticleListItem.propTypes = {
