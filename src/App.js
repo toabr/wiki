@@ -135,7 +135,7 @@ class App extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <Router>
+      <Router basename="/wiki">
         <SplashScreen open={this.state.renderSplashscreen} minLiveTime={2000} />
 
           {!this.state.renderSplashscreen &&

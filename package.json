@@ -2,7 +2,7 @@
   "name": "wiki-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://toabr.github.io/wiki/",
+  "homepage": "https://toabr.github.io/wiki",
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
