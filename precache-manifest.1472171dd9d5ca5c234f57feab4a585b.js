@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "31a53f4fb72e40542ce5",
-    "url": "/wiki/static/js/main.482ae026.chunk.js"
+    "revision": "3c3e1b4fc3bf840d0edc",
+    "url": "/wiki/static/js/main.c7cb554e.chunk.js"
   },
   {
     "revision": "2117087dc213cefe10b0",
@@ -116,7 +116,7 @@ self.__precacheManifest = [
     "url": "/wiki/static/media/roboto-latin-900italic.bc833e72.woff"
   },
   {
-    "revision": "da61080cae682e44326a4bee1d57fbe6",
+    "revision": "a63761f9238a03dad755f16912ea92e0",
     "url": "/wiki/index.html"
   }
 ];
