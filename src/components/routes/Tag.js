@@ -3,23 +3,15 @@ import { withContext } from '../context';
 
 import { tagReq, termReq } from '../../js/api'
 import ArticleList from '../article/ArticleList';
+import { withPage } from '../Page';
 
-import PropTypes from 'prop-types';
-import { withStyles, Typography } from '@material-ui/core';
-
-
-const styles = theme => ({
-    headline: {
-        marginBottom: theme.spacing.unit,
-        marginTop: theme.spacing.unit,
-    }
-});
 
 class Tag extends Component {
 
     componentDidMount() {
         const tid = this.props.match.params.tid;
 
+        this.props.setHeadLine('');
         termReq(tid, term => this.props.setHeadLine('#' + term[0].title) );
 
         this.props.loading(true);
@@ -30,27 +22,8 @@ class Tag extends Component {
     }
 
     render() {
-        const { classes } = this.props;
-
-        return (
-            <Fragment>
-                <Typography
-                    component="h2"
-                    variant="h4"
-                    color="textSecondary"
-                    className={classes.headline} >
-                    {this.props.headLine}
-                </Typography>
-                {!this.props.isLoading &&
-                    <ArticleList />
-                }
-            </Fragment>
-        );
+        return <ArticleList />
     }
 }
 
-Tag.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
-
-export default withContext(withStyles(styles)(Tag));
+export default withContext(withPage(Tag));

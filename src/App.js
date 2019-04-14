@@ -8,12 +8,13 @@ import SplashScreen from './components/SplashScreen';
 import Header from './components/Header';
 
 // routes
+import About from './components/routes/About';
+import Article from './components/routes/Article';
 import Home from './components/routes/Home';
 import Likes from './components/routes/Likes';
 import Recent from './components/routes/Recent';
 import Tag from './components/routes/Tag';
 import Tags from './components/routes/Tags';
-import Article from './components/routes/Article';
 import SearchResult from './components/routes/SearchResult';
 
 import PropTypes from 'prop-types';
@@ -42,7 +43,7 @@ const styles = theme => ({
 
 class App extends Component {
   state = {
-    headLine: 'Wiki',
+    headLine: '',
     isLoading: false,
     user: {
       id: 0,
@@ -56,7 +57,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log('### App mountet');
+    console.log('### App mountet, Mode:', process.env.NODE_ENV);
     setTimeout(() => {
       this.setState({ renderSplashscreen: false });
     }, 500);
@@ -135,8 +136,8 @@ class App extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <Router basename="/wiki">
-        <SplashScreen open={this.state.renderSplashscreen} minLiveTime={2000} />
+      <Router basename={(process.env.NODE_ENV === 'production')? '/wiki' : ''} >
+        <SplashScreen open={this.state.renderSplashscreen} minLiveTime={3000} />
 
           {!this.state.renderSplashscreen &&
           <Provider value={this.getContext()}>
@@ -149,6 +150,7 @@ class App extends Component {
                   <Route exact path="/tags" component={Tags} />
                   <Route exact path="/likes" component={Likes} />
                   <Route exact path="/recent" component={Recent} />
+                  <Route exact path="/about" component={About} />
                   <Route path="/tag/:tid" component={Tag} />
                   <Route path="/article/:nid" component={Article} />
                   <Route path="/search" component={SearchResult} />

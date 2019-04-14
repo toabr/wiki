@@ -21,7 +21,7 @@ export const injectToc = (node) => {
 
     addHref(tocLinks);
     if (alphabetical) orderAlphabetical(tocLinks);
-    console.dir(tocLinks);
+    // console.dir(tocLinks);
 
     let tocList = generateTocList(tocLinks);
     tocList.addEventListener('click', event => {

@@ -62,6 +62,10 @@ const menu = [{
   title: 'Recent',
   icon: <HistoryIcon />,
   route: '/recent'
+}, {
+  title: 'About',
+  icon: <HistoryIcon />,
+  route: '/about'
 }];
 
 class AppHeader extends React.Component {

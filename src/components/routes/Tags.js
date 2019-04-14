@@ -41,7 +41,7 @@ class TagList extends Component {
   render() {
     const { classes } = this.props;
 
-    const tags = orderByTitle(this.state.tags).map(tag => {
+    const tags = this.state.tags.map(tag => {
       return (
         <Button 
           key={tag.tid}

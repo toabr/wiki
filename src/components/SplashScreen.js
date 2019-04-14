@@ -38,7 +38,7 @@ class SplashScreen extends Component {
 
     componentDidMount() {
         const minLiveTime = (this.props.minLiveTime)? this.props.minLiveTime: 800;
-        console.log(minLiveTime);
+        // console.log('Splash minLiveTime', minLiveTime);
         
         setTimeout(() => {
             this.setState({ canDie: true });

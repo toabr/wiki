@@ -8,39 +8,34 @@ import { injectToc } from '../../js/toc';
 import LikeBtn from '../article/LikeBtn';
 
 import PropTypes from 'prop-types';
-import { withStyles, Typography, Paper, Button, Fab } from '@material-ui/core';
+import { withStyles, Typography, Button } from '@material-ui/core';
+import { withPage } from '../Page';
 
-
-const styles = theme => ({
-    paper: {
-        padding: theme.spacing.unit * 2,
-        position: 'relative',
-    },
-    button: {
-        margin: theme.spacing.unit / 2,
-    },
-});
 
 const Like = withRouter(props => <LikeBtn {...props} />);
 
 class Article extends Component {
 
     componentDidMount() {
-        this.props.setHeadLine('');
 
+        this.props.setHeadLine('');
         this.props.updateNodes([]);
-        this.props.loading(true);
+
         nodeReq([this.props.match.params.nid], nodes => {
+
+            const node = nodes[0];
+            node.body = injectToc(node.body);
+
             this.props.updateNodes(nodes);
+            this.props.addRecent(node.nid);
+
             this.props.loading(false);
-            this.props.addRecent(nodes[0].nid);
         });
     }
 
     render() {
-        const { classes } = this.props;
+        console.log('render');
         const node = this.props.nodes[0];
-        // console.log(node);
 
         const tags = (node && node.tags) ? stripTags(node.tags).map(tag => {
             return (
@@ -48,7 +43,6 @@ class Article extends Component {
                     key={tag.tid}
                     variant="contained"
                     color="secondary"
-                    className={classes.button}
                     component={Link}
                     to={`/tag/${tag.tid}`}>
                     {'#' + tag.title}
@@ -59,30 +53,22 @@ class Article extends Component {
         return (
             <Fragment>
                 {node &&
-                    <Paper className={classes.paper}>
+                    <div style={{ padding: 18 }}>
                         <Like nid={node.nid} />
 
-                        <Typography component="h1" variant="h4" className={classes.heading} gutterBottom>
+                        <Typography component="h1" variant="h4" gutterBottom>
                             {node.title}
                         </Typography>
-                        <Typography variant="body1" dangerouslySetInnerHTML={{
-                            __html: injectToc(node.body)
-                        }} />
+
+                        <Typography variant="body1" dangerouslySetInnerHTML={{ __html: node.body }} />
+
                         {tags}
-                    </Paper>
-                }
-                {!this.props.isLoading && !node &&
-                    <Typography component="h1" variant="h4" color="textSecondary" gutterBottom>
-                        No Result
-                    </Typography>
+                    </div>
                 }
             </Fragment>
         );
     }
 }
 
-Article.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
-export default withContext(withStyles(styles)(Article));
+export default withContext(withPage(Article));
