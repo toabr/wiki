@@ -1,25 +1,20 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from "react-router-dom";
-import { withContext } from '../context';
 
-import { termReq } from '../../js/api'
-import { orderByTitle } from '../../js/helper';
+import { getTags } from '../../js/api';
+import { withPage } from '../Page';
 
 import PropTypes from 'prop-types';
-import { withStyles, Button, Paper, Typography } from '@material-ui/core';
+import { withStyles, Button } from '@material-ui/core';
 
 
 const styles = theme => ({
-  paper: {
+  wrapper: {
     textAlign: 'center',
     padding: theme.spacing.unit,
   },
   button: {
     margin: theme.spacing.unit / 2,
-  },
-  headline: {
-    marginBottom: theme.spacing.unit,
-    marginTop: theme.spacing.unit,
   },
 });
 
@@ -31,10 +26,9 @@ class TagList extends Component {
   componentDidMount() {
     this.props.setHeadLine('Tags');
 
-    this.props.loading(true);
-    termReq('', tags => {
+    getTags('', tags => {
       this.setState({ tags });
-      this.props.loading(false);
+      this.props.ready(true);
     });
   }
 
@@ -56,20 +50,9 @@ class TagList extends Component {
     });
 
     return (
-      <Fragment>
-        <Typography
-          component="h2"
-          variant="h4"
-          color="textSecondary"
-          className={classes.headline} >
-          {this.props.headLine}
-        </Typography>
-        {!this.props.isLoading &&
-          <Paper className={classes.paper}>
-            {tags}
-          </Paper>
-        }
-      </Fragment>
+      <div className={classes.wrapper} >
+          {tags}
+      </div>
     );
   }
 }
@@ -78,4 +61,4 @@ TagList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withContext(withStyles(styles)(TagList));
+export default withPage(withStyles(styles)(TagList));

@@ -13,7 +13,7 @@ import Article from './components/routes/Article';
 import Home from './components/routes/Home';
 import Likes from './components/routes/Likes';
 import Recent from './components/routes/Recent';
-import Tag from './components/routes/Tag';
+import ArticlesByTag from './components/routes/ArticlesByTag';
 import Tags from './components/routes/Tags';
 import SearchResult from './components/routes/SearchResult';
 
@@ -43,13 +43,7 @@ const styles = theme => ({
 
 class App extends Component {
   state = {
-    headLine: '',
     isLoading: false,
-    user: {
-      id: 0,
-      name: 'Guest',
-    },
-    nodes: [],
     likedArticles: [],
     recentArticles: [],
     search: '',
@@ -67,11 +61,6 @@ class App extends Component {
       likedArticles = likedArticles.split(',');
       this.setState({ likedArticles });
     }
-
-  }
-
-  updateNodes = (nodes) => {
-    this.setState({ nodes });
   }
 
   removeNode(nid) {
@@ -98,10 +87,6 @@ class App extends Component {
     this.setState({ search });
   }
   
-  setHeadLine = (headLine) => {
-    this.setState({ headLine });
-  }
-  
   toggleLike = (nid, path) => {
     let { likedArticles } = this.state;
     const index = likedArticles.indexOf(nid);
@@ -121,16 +106,16 @@ class App extends Component {
     console.log('share', nid);
   }
 
-  getContext = () => ({
-    addRecent: this.addRecent,
-    handleSearch: this.handleSearch,
-    loading: this.loading,
-    removeNode: this.removeNode,
-    updateNodes: this.updateNodes,
-    setHeadLine: this.setHeadLine,
-    toggleLike: this.toggleLike,
-    share: this.share,
-    ...this.state,
+  getAppContext = () => ({
+    app: {
+      addRecent: this.addRecent,
+      handleSearch: this.handleSearch,
+      loading: this.loading,
+      removeNode: this.removeNode,
+      toggleLike: this.toggleLike,
+      share: this.share,
+      ...this.state,
+    }
   });
 
   render() {
@@ -140,7 +125,7 @@ class App extends Component {
         <SplashScreen open={this.state.renderSplashscreen} minLiveTime={3000} />
 
           {!this.state.renderSplashscreen &&
-          <Provider value={this.getContext()}>
+          <Provider value={this.getAppContext()}>
             <Header />
 
             <Grid container className={classes.root}>
@@ -151,7 +136,7 @@ class App extends Component {
                   <Route exact path="/likes" component={Likes} />
                   <Route exact path="/recent" component={Recent} />
                   <Route exact path="/about" component={About} />
-                  <Route path="/tag/:tid" component={Tag} />
+                  <Route path="/tag/:tid" component={ArticlesByTag} />
                   <Route path="/article/:nid" component={Article} />
                   <Route path="/search" component={SearchResult} />
                   <Route path="*" component={() => "404 NOT FOUND"} />

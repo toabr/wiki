@@ -6,36 +6,41 @@ import { withContext } from './context';
 export const withPage = WrappedComponent => {
     return withContext( class Page extends Component {
         state = {
-            ready: true,
+            isReady: false,
+            headLine: '',
         }
 
         componentDidMount() {
-            // this.props.setHeadLine('HOC');
-            this.props.loading(true);
+            this.props.app.loading(true);
+        }
+
+        ready = (isReady) => {
+            this.setState({ isReady });
+            this.props.app.loading(false);
+        }
+
+        setHeadLine = (headLine) => {
+            this.setState({ headLine });
         }
 
         render() {
-            console.log('HOC', this.props);
-            const { isLoading, nodes, headLine } = this.props;
-
             return(
                 <Fragment>
 
                     <Typography component="h2" variant="h4" color="textSecondary" >
-                        {headLine}
+                        {this.state.headLine}
                     </Typography>
 
-                    <Zoom in={!isLoading}>
+                    <Zoom in={this.state.isReady}>
                         <Paper>
-                            <WrappedComponent {...this.props} />
+                            <WrappedComponent 
+                                ready={this.ready} 
+                                setHeadLine={this.setHeadLine}
+                                likedArticles={this.props.app.likedArticles}
+                                addRecent={this.props.app.addRecent}
+                            />
                         </Paper>
                     </Zoom>
-
-                    {!isLoading && nodes.length === 0 &&
-                        <Typography component="h1" variant="h4" color="textSecondary" gutterBottom>
-                            no result ...
-                        </Typography>
-                    }
 
                 </Fragment>
             );

@@ -1,8 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter, Link } from "react-router-dom";
-import { withContext } from '../context';
 
-import { nodeReq } from '../../js/api';
+import { getArticle } from '../../js/api';
 import { toLocalDate, stripTags } from "../../js/helper";
 import { injectToc } from '../../js/toc';
 import LikeBtn from '../article/LikeBtn';
@@ -15,29 +14,30 @@ import { withPage } from '../Page';
 const Like = withRouter(props => <LikeBtn {...props} />);
 
 class Article extends Component {
+    state = {
+        article: {
+            nid: null,
+            title: '',
+            body: '',
+            tags: '',
+        }
+    }
 
     componentDidMount() {
 
-        this.props.setHeadLine('');
-        this.props.updateNodes([]);
-
-        nodeReq([this.props.match.params.nid], nodes => {
-
-            const node = nodes[0];
-            node.body = injectToc(node.body);
-
-            this.props.updateNodes(nodes);
-            this.props.addRecent(node.nid);
-
-            this.props.loading(false);
+        getArticle(this.props.match.params.nid, article => {
+            article.body = injectToc(article.body);
+            this.setState({ article }, () => {
+                this.props.ready(true);
+                this.props.addRecent(article.nid);
+            });
         });
     }
 
     render() {
-        console.log('render');
-        const node = this.props.nodes[0];
+        const article = this.state.article;
 
-        const tags = (node && node.tags) ? stripTags(node.tags).map(tag => {
+        const tags = stripTags(article.tags).map(tag => {
             return (
                 <Button
                     key={tag.tid}
@@ -48,27 +48,25 @@ class Article extends Component {
                     {'#' + tag.title}
                 </Button>
             );
-        }) : null;
+        });
 
         return (
             <Fragment>
-                {node &&
-                    <div style={{ padding: 18 }}>
-                        <Like nid={node.nid} />
+                <div style={{ padding: 18 }}>
+                    <LikeBtn nid={article.nid} />
 
-                        <Typography component="h1" variant="h4" gutterBottom>
-                            {node.title}
-                        </Typography>
+                    <Typography component="h1" variant="h4" gutterBottom>
+                        {article.title}
+                    </Typography>
 
-                        <Typography variant="body1" dangerouslySetInnerHTML={{ __html: node.body }} />
+                    <Typography variant="body1" dangerouslySetInnerHTML={{ __html: article.body }} />
 
-                        {tags}
-                    </div>
-                }
+                    {tags}
+                </div>
             </Fragment>
         );
     }
 }
 
 
-export default withContext(withPage(Article));
+export default withPage(withRouter(Article));

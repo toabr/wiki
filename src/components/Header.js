@@ -87,6 +87,7 @@ class AppHeader extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { app } = this.props;
 
     // Drawer Menu
     const sideList = (
@@ -104,7 +105,7 @@ class AppHeader extends React.Component {
               :
               <ListItem button key={item.title} component={Link} to={item.route} >
                 <ListItemIcon>
-                  <Badge color="secondary" badgeContent={this.props.likedArticles.length}>
+                  <Badge color="secondary" badgeContent={app.likedArticles.length}>
                     {ItemIcon}
                   </Badge>
                 </ListItemIcon>
@@ -150,7 +151,7 @@ class AppHeader extends React.Component {
             </Typography>
             <Searchbar/>
           </Toolbar>
-          {this.props.isLoading && <LinearProgress color="secondary" />}
+          {app.isLoading && <LinearProgress color="secondary" />}
         </AppBar>
       </div>
     );

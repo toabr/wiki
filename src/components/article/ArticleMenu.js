@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { withContext } from '../context';
+import { withRouter } from "react-router-dom";
 
 import PropTypes from 'prop-types';
 import MoreIcon from '@material-ui/icons/MoreVert';
@@ -36,14 +37,14 @@ class ArticleMenu extends Component {
         this.setState({ liked });
     }
 
-    checkLike = () => this.props.likedArticles.includes(this.props.nid);
+    checkLike = () => this.props.app.likedArticles.includes(this.props.nid);
 
     handleClick = event => {
         this.setState({ anchorEl: event.currentTarget });
     };
 
     handleLike = () => {
-        this.props.toggleLike(this.props.nid, this.props.match.path);
+        this.props.app.toggleLike(this.props.nid, this.props.match.path);
         
         const liked = this.checkLike();
         this.setState({ liked });
@@ -52,7 +53,7 @@ class ArticleMenu extends Component {
     };
     
     handleShare = () => {
-        this.props.share(this.props.nid);
+        this.props.app.share(this.props.nid);
         this.handleClose();
     };
 
@@ -106,4 +107,4 @@ ArticleMenu.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withContext(ArticleMenu));
+export default withStyles(styles)(withContext(withRouter(ArticleMenu)));

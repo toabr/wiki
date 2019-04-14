@@ -31,10 +31,10 @@ class LikeBtn extends Component {
         // console.log(this.props);
     }
 
-    checkLike = () => this.props.likedArticles.includes(this.props.nid);
+    checkLike = () => this.props.app.likedArticles.includes(this.props.nid);
 
     handleLike = () => {
-        this.props.toggleLike(this.props.nid, this.props.match.path);
+        this.props.app.toggleLike(this.props.nid, this.props.match.path);
         
         const liked = this.checkLike();
         this.setState({ liked });
