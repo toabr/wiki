@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 
 import { getArticlesByTag, getTags } from '../../js/api'
@@ -14,7 +14,6 @@ class ArticlesByTag extends Component {
 
     componentDidMount() {
         const tid = this.props.match.params.tid;
-
         getTags(tid, tag => this.props.setHeadLine('#' + tag[0].title) );
 
         getArticlesByTag(tid, articles => {

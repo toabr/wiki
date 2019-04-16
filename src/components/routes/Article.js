@@ -5,16 +5,16 @@ import { getArticle } from '../../js/api';
 import { toLocalDate, stripTags } from "../../js/helper";
 import { injectToc } from '../../js/toc';
 import LikeBtn from '../article/LikeBtn';
+import TagBtn from '../tag/TagBtn';
 
 import PropTypes from 'prop-types';
 import { withStyles, Typography, Button } from '@material-ui/core';
 import { withPage } from '../Page';
 
 
-const Like = withRouter(props => <LikeBtn {...props} />);
-
 class Article extends Component {
     state = {
+        nid: parseInt(this.props.match.params.nid),
         article: {
             nid: null,
             title: '',
@@ -24,36 +24,26 @@ class Article extends Component {
     }
 
     componentDidMount() {
-
-        getArticle(this.props.match.params.nid, article => {
+        getArticle(this.state.nid, article => {
             article.body = injectToc(article.body);
             this.setState({ article }, () => {
                 this.props.ready(true);
-                this.props.addRecent(article.nid);
+                this.props.addRecent(this.state.nid);
             });
         });
     }
 
     render() {
-        const article = this.state.article;
+        const { nid, article } = this.state;
 
         const tags = stripTags(article.tags).map(tag => {
-            return (
-                <Button
-                    key={tag.tid}
-                    variant="contained"
-                    color="secondary"
-                    component={Link}
-                    to={`/tag/${tag.tid}`}>
-                    {'#' + tag.title}
-                </Button>
-            );
+            return <TagBtn key={tag.tid} title={'#' + tag.title} tid={parseInt(tag.tid)} />
         });
 
         return (
             <Fragment>
                 <div style={{ padding: 18 }}>
-                    <LikeBtn nid={article.nid} />
+                    <LikeBtn nid={nid} />
 
                     <Typography component="h1" variant="h4" gutterBottom>
                         {article.title}

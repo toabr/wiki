@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { withContext } from './context';
 
 import Searchbar from './header/Searchbar';
@@ -10,6 +10,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import BookmarksIcon from '@material-ui/icons/Bookmarks';
 import StarIcon from '@material-ui/icons/Star';
 import HistoryIcon from '@material-ui/icons/History';
+import InfoIcon from '@material-ui/icons/Info';
 
 import {
   AppBar,
@@ -64,7 +65,7 @@ const menu = [{
   route: '/recent'
 }, {
   title: 'About',
-  icon: <HistoryIcon />,
+  icon: <InfoIcon />,
   route: '/about'
 }];
 
@@ -135,7 +136,7 @@ class AppHeader extends React.Component {
           </div>
         </SwipeableDrawer>
 
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Toolbar>
             <IconButton
               className={classes.menuButton}

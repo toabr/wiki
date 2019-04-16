@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-
 import PropTypes from 'prop-types';
-import Logo from '../img/logo.jpg';
 
-import { withStyles, Dialog, DialogContent, Slide, LinearProgress, Grid } from '@material-ui/core';
+import { loadImage } from '../js/api';
+import logo from '../img/logo.jpg';
+
+import { withStyles, Dialog, DialogContent, Slide, LinearProgress, Zoom } from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -34,15 +35,21 @@ class SplashScreen extends Component {
     state = {
         open: true,
         canDie: false,
+        logoReady: false,
     }
 
     componentDidMount() {
-        const minLiveTime = (this.props.minLiveTime)? this.props.minLiveTime: 800;
+        const minLiveTime = (this.props.minLiveTime) ? this.props.minLiveTime : 800;
         // console.log('Splash minLiveTime', minLiveTime);
-        
-        setTimeout(() => {
-            this.setState({ canDie: true });
-        }, minLiveTime);
+
+        loadImage(logo)
+            .then(img => {
+                console.log('logo ready', img);
+                this.setState({ logoReady: true });
+                setTimeout(() => {
+                    this.setState({ canDie: true });
+                }, minLiveTime);
+            });
     }
 
     componentDidUpdate(oldProps) {
@@ -53,13 +60,12 @@ class SplashScreen extends Component {
         }
     }
 
-    Transition = (props) => {
-        return <Slide direction="up" {...props} />;
-    }
+    Transition = props => <Slide direction="up" {...props} />;
 
+    
     render() {
         const { classes } = this.props;
-        const open = (!this.state.open && this.state.canDie)? false : true;
+        const open = (!this.state.open && this.state.canDie) ? false : true;
 
         return (
             <Dialog
@@ -69,7 +75,9 @@ class SplashScreen extends Component {
                 transitionDuration={{ enter: 0, exit: 250 }}>
 
                 <DialogContent className={classes.paper} >
-                    <img src={Logo} className={classes.logo} alt="Wiki - Logo" />
+                    <Zoom in={this.state.logoReady} >
+                        <img src={logo} className={classes.logo} alt="Wiki - Logo" />
+                    </Zoom>
                     <LinearProgress className={classes.progress} color="secondary" />
                 </DialogContent>
 

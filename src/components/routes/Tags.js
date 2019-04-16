@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { getTags } from '../../js/api';
 import { withPage } from '../Page';
+import TagBtn from '../tag/TagBtn';
 
 import PropTypes from 'prop-types';
 import { withStyles, Button } from '@material-ui/core';
@@ -24,8 +25,6 @@ class TagList extends Component {
   };
   
   componentDidMount() {
-    this.props.setHeadLine('Tags');
-
     getTags('', tags => {
       this.setState({ tags });
       this.props.ready(true);
@@ -34,20 +33,13 @@ class TagList extends Component {
 
   render() {
     const { classes } = this.props;
-
-    const tags = this.state.tags.map(tag => {
-      return (
-        <Button 
-          key={tag.tid}
-          variant="contained"
-          color="secondary"
-          className={classes.button}
-          component={Link}
-          to={`/tag/${tag.tid}`}>
-          {'#' + tag.title}
-        </Button>
-      );
-    });
+    const tags = this.state.tags.map(tag => (
+      <TagBtn
+        key={tag.tid}
+        title={'#' + tag.title}
+        tid={parseInt(tag.tid)}
+      />
+    ));
 
     return (
       <div className={classes.wrapper} >
@@ -61,4 +53,4 @@ TagList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withPage(withStyles(styles)(TagList));
+export default withPage(withStyles(styles)(TagList), 'Tags');

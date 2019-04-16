@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, withRouter} from "react-router-dom";
 import { Provider } from './components/context'; 
 
 import { handleLocalStore } from './js/helper';
@@ -17,7 +17,7 @@ import ArticlesByTag from './components/routes/ArticlesByTag';
 import Tags from './components/routes/Tags';
 import SearchResult from './components/routes/SearchResult';
 
-import PropTypes from 'prop-types';
+import PropTypes, { string } from 'prop-types';
 import { withStyles, Grid } from '@material-ui/core';
 
 
@@ -46,7 +46,7 @@ class App extends Component {
     isLoading: false,
     likedArticles: [],
     recentArticles: [],
-    search: '',
+    searchTerm: '',
     renderSplashscreen: true,
   }
 
@@ -58,22 +58,17 @@ class App extends Component {
 
     let likedArticles = handleLocalStore({key: 'likes'});
     if(likedArticles) {
-      likedArticles = likedArticles.split(',');
+      likedArticles = likedArticles.split(',').map( Number );
+      console.log('likedArticles', likedArticles);
       this.setState({ likedArticles });
     }
   }
 
-  removeNode(nid) {
-    console.log('remove', nid);
-    const nodes = this.state.nodes.filter((node) => {
-      return node.nid !== nid;
-    });
-    this.setState({ nodes });
-  }
-  
+
   loading = (isLoading) => {
     this.setState({ isLoading });
   }
+
 
   addRecent = (nid) => {
     let recentArticles = this.state.recentArticles;
@@ -82,29 +77,54 @@ class App extends Component {
     this.setState({ recentArticles });
   }
 
-  handleSearch = (search) => {
-    // console.log(this.props);
-    this.setState({ search });
-  }
+
+  handleSearch = searchTerm => {
+    console.log('search', this.props);
+    // history.push('/search');
+    this.setState({ searchTerm });
+  };
   
-  toggleLike = (nid, path) => {
-    let { likedArticles } = this.state;
-    const index = likedArticles.indexOf(nid);
 
-    if (index >= 0) { // unLike
-      likedArticles.splice(index, 1); // remove node from likedArticles
-      if(path === '/likes') this.removeNode(nid); // remove node from view
-    }else { // like
-      likedArticles.push(nid);
-    }
+  checkLike = (nid) => {
+    const like = this.state.likedArticles.includes(nid);
+    // console.log('checkLike: %i in %o = %s', nid, this.state.likedArticles, like);
+    return like
+  };
 
-    handleLocalStore({ key: 'likes', value: likedArticles });
-    this.setState({ likedArticles });
+
+  toggleLike = (nid) => {
+    return new Promise((resolve, reject) => {
+
+      const id = Number(nid);
+      if(id === NaN) reject(new Error('msg'));
+
+      let { likedArticles } = this.state;
+      const index = likedArticles.indexOf(id);
+      
+      if (index >= 0) { // unLike
+        likedArticles.splice(index, 1);
+        this.setState({ likedArticles }, () => {
+          handleLocalStore({ key: 'likes', value: likedArticles });
+          resolve(false);
+        });
+      }else { // like
+        likedArticles = [...likedArticles, id];
+        this.setState({ likedArticles }, () => {
+          handleLocalStore({ key: 'likes', value: likedArticles });
+          resolve(true);
+        });
+      }
+      // console.log('likedArticles', likedArticles);
+
+
+    });
   }
+
 
   share = nid => {
     console.log('share', nid);
   }
+
 
   getAppContext = () => ({
     app: {
@@ -113,10 +133,12 @@ class App extends Component {
       loading: this.loading,
       removeNode: this.removeNode,
       toggleLike: this.toggleLike,
+      checkLike: this.checkLike,
       share: this.share,
       ...this.state,
     }
   });
+
 
   render() {
     const { classes } = this.props;

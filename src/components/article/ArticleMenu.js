@@ -28,39 +28,31 @@ const styles = theme => ({
 
 class ArticleMenu extends Component {
     state = {
+        nid: Number(this.props.nid),
         anchorEl: null,
         liked: false,
     }
 
     componentDidMount() {
-        const liked = this.checkLike();
-        this.setState({ liked });
+        this.setState({ liked: this.props.app.checkLike(this.state.nid) });
     }
+    
+    handleClick = event => this.setState({ anchorEl: event.currentTarget });
+    
+    handleClose = () => this.setState({ anchorEl: null });
 
-    checkLike = () => this.props.app.likedArticles.includes(this.props.nid);
+    handleLikeClick = () => {
+        this.props.app.toggleLike(this.state.nid)
+            .then(liked => this.setState({ liked }))
+            .catch(err => console.log(err));
 
-    handleClick = event => {
-        this.setState({ anchorEl: event.currentTarget });
-    };
-
-    handleLike = () => {
-        this.props.app.toggleLike(this.props.nid, this.props.match.path);
-        
-        const liked = this.checkLike();
-        this.setState({ liked });
-        
         this.handleClose();
     };
     
-    handleShare = () => {
-        this.props.app.share(this.props.nid);
+    handleShareClick = () => {
+        this.props.app.share(this.state.nid);
         this.handleClose();
     };
-
-    handleClose = () => {
-        this.setState({ anchorEl: null });
-    };
-
 
     render() {
         const { classes } = this.props;
@@ -81,7 +73,7 @@ class ArticleMenu extends Component {
                     <MoreIcon />
                 </IconButton>
                 <Menu id="simple-menu" anchorEl={anchorEl} open={open} onClose={this.handleClose} >
-                    <MenuItem onClick={this.handleLike} className={classes.menuItem}>
+                    <MenuItem onClick={this.handleLikeClick} className={classes.menuItem}>
                         <ListItemIcon className={classes.icon}>
                             {likeIcon}
                         </ListItemIcon>
@@ -90,7 +82,7 @@ class ArticleMenu extends Component {
                             primary={likeText} 
                         />
                     </MenuItem>
-                    <MenuItem onClick={this.handleShare} className={classes.menuItem}>
+                    <MenuItem onClick={this.handleShareClick} className={classes.menuItem}>
                         <ListItemIcon className={classes.icon}>
                             <ShareIcon />
                         </ListItemIcon>

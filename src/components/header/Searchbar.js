@@ -56,13 +56,10 @@ const Searchbar = (props) => {
     const { classes } = props;
 
     const handleEnter = (e) => {
-        console.log('search', e.target.value);
-
-        const { history } = props;
         if (e.key === 'Enter') {
-            props.handleSearch(e.target.value);
+            props.app.handleSearch(e.target.value);
             e.target.value = '';
-            history.push('/search');
+            props.history.push('/search');
         }
     }
     

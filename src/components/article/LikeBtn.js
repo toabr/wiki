@@ -5,10 +5,7 @@ import PropTypes from 'prop-types';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 
-import {
-    withStyles,
-    Fab,
-} from '@material-ui/core';
+import { withStyles, Fab } from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -22,40 +19,44 @@ const styles = theme => ({
 
 class LikeBtn extends Component {
     state = {
+        nid: Number(this.props.nid),
         liked: false,
     }
 
     componentDidMount() {
-        const liked = this.checkLike();
-        this.setState({ liked });
-        // console.log(this.props);
+        this.setState({ liked: this.props.app.checkLike(this.state.nid) });
     }
 
-    checkLike = () => this.props.app.likedArticles.includes(this.props.nid);
-
-    handleLike = () => {
-        this.props.app.toggleLike(this.props.nid, this.props.match.path);
-        
-        const liked = this.checkLike();
-        this.setState({ liked });
+    handleClick = () => {
+        this.props.app.toggleLike(this.state.nid)
+            .then(liked => this.setState({ liked }))
+            .catch(err => console.log(err));
     };
-    
+
     render() {
         const { classes } = this.props;
         const { liked } = this.state;
 
-        const likeIcon = (liked) ? <StarIcon /> : <StarBorderIcon />;
-        const likeText = (liked) ? "Unlike" : "Like";
-        const likeColor = (liked) ? "default" : "secondary";
-
         return (
-            <Fab size="large" 
-                color={likeColor} 
-                aria-label={likeText} 
-                onClick={this.handleLike}
-                className={classes.fab}>
-                {likeIcon}
-            </Fab>
+            <Fragment>
+                {(liked) ?
+                    <Fab size="large"
+                        aria-label="Unlike"
+                        color="default"
+                        onClick={this.handleClick}
+                        className={classes.fab}>
+                        <StarBorderIcon />
+                    </Fab>
+                    :
+                    <Fab size="large"
+                        aria-label="Like"
+                        color="secondary"
+                        onClick={this.handleClick}
+                        className={classes.fab}>
+                        <StarIcon />
+                    </Fab>
+                }
+            </Fragment>
         );
     }
 
@@ -63,6 +64,7 @@ class LikeBtn extends Component {
 
 LikeBtn.propTypes = {
     classes: PropTypes.object.isRequired,
+    nid: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(withContext(LikeBtn));
