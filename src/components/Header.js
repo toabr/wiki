@@ -56,11 +56,11 @@ const menu = [{
   icon: <BookmarksIcon />,
   route: '/tags'
 }, {
-  title: 'Likes',
+  title: 'Stars',
   icon: <StarIcon />,
   route: '/likes'
 }, {
-  title: 'Recent',
+  title: 'History',
   icon: <HistoryIcon />,
   route: '/recent'
 }, {
@@ -96,7 +96,7 @@ class AppHeader extends React.Component {
         {menu.map((item) => {
           const ItemIcon = item.icon;
           return (
-            (item.title !== 'Likes') ?
+            (item.title !== 'Stars') ?
               <ListItem button key={item.title} component={Link} to={item.route} >
                 <ListItemIcon>
                   {ItemIcon}

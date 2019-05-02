@@ -13,6 +13,7 @@ const GET = (requestUrl, cb) => {
             })
             .then(data => cb(data))
             .catch(err => {
+                new Error(`Could not load ${requestUrl}`);
                 console.log('GET ERROR:', err, response);
                 return cb([]);
             });
@@ -29,9 +30,9 @@ export const getArticles = ({ ids, page }, cb) => {
 }
 
 export const getArticle = (id, cb) => {
-    const endpoint = `${apiUrl}/api/articles/`;
-    const requestUrl = endpoint + id;
-    GET(requestUrl, (data) => cb(data[0]));
+        const endpoint = `${apiUrl}/api/articles/`;
+        const requestUrl = endpoint + id;
+        GET(requestUrl, cb);
 }
 
 export const getTags = (tid, cb) => {

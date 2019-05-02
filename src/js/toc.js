@@ -1,10 +1,10 @@
 // version = 0.2
 // description = generate a table of contents (toc) on page load
 
-export const injectToc = (node) => {
+export const injectToc = (body) => {
 
     let wrapper = document.createElement('div');
-    wrapper.innerHTML = node;
+    wrapper.innerHTML = body;
 
     const toc = wrapper.getElementsByClassName('table-of-contents')[0];
     if (toc) console.log('### generate table of contents'); else return wrapper.innerHTML;
@@ -12,146 +12,67 @@ export const injectToc = (node) => {
     // caching
     const alphabetical = (toc.classList.contains('alphabetical')) ? true : false;
     const numerals = (toc.classList.contains('numerals')) ? true : false;
-    const headingNodes = wrapper.getElementsByTagName('h3');
-    const headingsList = getText(headingNodes);
-    const tocLinks = generateTocLinks(headingsList);
+    let headingNodes = [...wrapper.getElementsByTagName('h3')];
 
-    addIds(headingNodes);
-    if (numerals) addNumerals(headingNodes);
+    /*
+     * generate Toc links
+     */
+    let tocLinks = headingNodes.map((e,i) => {
+        let link = document.createElement('a');
+        link.classList.add('toc-link');
+        link.setAttribute('href', '#toc-' + (i + 1));
+        link.innerText = e.innerText;
+        return link
+    });
 
-    addHref(tocLinks);
-    if (alphabetical) orderAlphabetical(tocLinks);
-    // console.dir(tocLinks);
+    /*
+     * add ids to headings
+     */
+    headingNodes = headingNodes.map((e,i) => {
+        e.id = 'toc-' + (i + 1);
+        return e
+    });
 
-    let tocList = generateTocList(tocLinks);
-    tocList.addEventListener('click', event => {
-            event.preventDefault();
-            var target = ('href' in event.target) ? event.target.attributes.href.value : null;
-            scrollintoView(target);
-            // console.dir(target);
-        });
+    /*
+     * add numerals to headings
+     */
+    headingNodes = (numerals) ? headingNodes.map((e,i) => {
+        e.innerText = (i + 1) + '. ' + e.innerText;
+        return e
+    }) : headingNodes;
+
+    /*
+     * add href to tocLinks
+     */
+    tocLinks = tocLinks.map((e,i) => {
+        e.setAttribute('href', '#toc-' + (i + 1))
+        return e
+    });
+
+    /*
+     * order tocLinks alphabetical
+     */
+    tocLinks = (alphabetical) ? tocLinks.sort((a, b) => {
+        const nameA = a.innerText.toUpperCase(); 
+        const nameB = b.innerText.toUpperCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+    }) : tocLinks;
+
+    /*
+     * let tocList = generateTocList(tocLinks);
+     */
+    let tocList = document.createElement('ul');
+    tocLinks.map(e => {
+        let li = document.createElement('li');
+        li.classList.add('toc-item');
+        li.append(e);
+        tocList.append(li);
+    });
 
     toc.innerHTML = '';
     toc.append(tocList);
 
-    // scroll to top btn
-    // insertToTopBtn(article);
-
-
     return wrapper.innerHTML;
-}
-
-
-function getText(nodeList) {
-    var textList = [];
-    for (var i = 0; i < nodeList.length; i++) {
-        textList.push(nodeList[i].innerText);
-    }
-    return textList;
-}
-
-
-function generateTocLinks(textList) {
-    var links = [];
-
-    for (var i = 0; i < textList.length; i++) {
-        var item = textList[i];
-
-        var link = document.createElement('a');
-        link.classList.add('toc-link');
-        link.setAttribute('href', '#toc-' + (i + 1));
-        link.innerText = item;
-
-        links.push(link);
-    }
-    return links;
-}
-
-
-function addHref(links) {
-    for (var i = 0; i < links.length; i++) {
-        var link = links[i];
-        link.setAttribute('href', '#toc-' + (i + 1));
-    }
-    return links;
-}
-
-
-function generateTocList(nodeList) {
-    var list = document.createElement('ul');
-
-    for (var i = 0; i < nodeList.length; i++) {
-        var item = nodeList[i];
-
-        var listElement = document.createElement('li');
-        listElement.classList.add('toc-item');
-
-        listElement.append(item);
-        list.append(listElement);
-    }
-    return list;
-}
-
-
-function orderAlphabetical(nodeList) {
-    var output = nodeList.sort(function (a, b) {
-        var nameA = a.innerText.toUpperCase(); // ignore upper and lowercase
-        var nameB = b.innerText.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-    });
-    // console.log(output);
-    return output;
-}
-
-
-function addNumerals(headingNodes) {
-    for (var i = 0; i < headingNodes.length; i++) {
-        headingNodes[i].innerText = (i + 1) + '. ' + headingNodes[i].innerText;
-    }
-}
-
-
-function addIds(headingNodes) {
-    for (var i = 0; i < headingNodes.length; i++) {
-        headingNodes[i].id = 'toc-' + (i + 1);
-    }
-}
-
-
-function scrollintoView(id) {
-    var target = document.getElementById(id.slice(1, id.length));
-    if (target) {
-        var offset = target.offsetTop + target.offsetParent.offsetTop;
-        window.scrollTo({ top: offset, behavior: 'smooth' });
-    }
-}
-
-
-function insertToTopBtn(domNode) {
-    var topBtn = document.createElement('div');
-    topBtn.classList.add('back-to-top-btn', 'btn', 'btn-primary');
-    topBtn.innerText = 'TOP';
-    domNode.appendChild(topBtn);
-
-    topBtn.addEventListener('click', function () {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // console.log('getOffset', getOffset());
-    topBtn.style.left = getOffset();
-
-    var resizeTimer;
-    window.addEventListener('resize', function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function () {
-            topBtn.style.left = getOffset();
-        }, 250);
-    });
-
-    function getOffset() {
-        var offset = (domNode.offsetLeft + domNode.offsetParent.offsetLeft + domNode.clientWidth - topBtn.clientWidth) + 'px';
-        return offset;
-    }
 }

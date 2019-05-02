@@ -1,19 +1,23 @@
 import React, { Component, Fragment } from 'react';
 
 import { withPage } from '../Page';
-import { getArticles } from '../../js/api';
+import APIService from '../../js/APIService';
 import ArticleList from '../article/ArticleList';
 
 import PropTypes from 'prop-types';
 import { withStyles, Button, CircularProgress } from '@material-ui/core';
 
 const styles = theme => ({
+    btnWrap: {
+        padding: theme.spacing.unit,
+    },
     button: {
         width: '100%',
     },
     progress: {
         display: 'flex',
         justifyContent: 'center',
+        padding: theme.spacing.unit,
     },
 });
 
@@ -26,43 +30,30 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        this.getPage(() => {
-            this.props.ready(true);
-        });
-    }
-
-    getPage = (cb) => {
-        getArticles({ ids: [], page: this.state.page }, (fetchedArticles) => {
-            if (fetchedArticles.length > 0) {
-                this.pushArticles(fetchedArticles);
-            } else {
-                this.setState({ noMoreResults: true });
-            }
-            cb();
-        });
-    }
-
-    pushArticles = (newArticles) => {
-        let articles = this.state.articles;
-        for (let i = 0; i < newArticles.length; i++) {
-            const article = newArticles[i];
-            articles.push(article);
-        }
-        this.setState({ articles });
+        const reqObj = { ids: [], page: this.state }
+        APIService.getArticles(reqObj)
+            .then(articles => {
+                this.setState({ articles });
+                this.props.ready(true);
+            })
     }
 
     nextPage = () => {
-        if (!this.state.noMoreResults) {
-            this.setState({ loading: true });
+        this.setState({ loading: true });
 
-            this.setState({ page: this.state.page + 1 }, () => {
-                this.getPage(() => {
-                    this.setState({ loading: false });
-                });
-            });
-        }
+        const reqObj = { ids: [], page: this.state.page + 1 }
+        APIService.getArticles(reqObj)
+            .then(newArticles => {
+                const articles = [...this.state.articles, ...newArticles];
+                this.setState({ articles });
+                this.setState({ page: reqObj.page });
+
+                if (newArticles.length === 0) this.setState({ noMoreResults: true });
+                
+                this.setState({ loading: false });
+            })
     }
-
+    
     render() {
         const { classes } = this.props;
 
@@ -74,14 +65,16 @@ class Home extends Component {
                         <CircularProgress color="secondary" />
                     </div>
                 }
-                {!this.state.noMoreResults &&
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        className={classes.button}
-                        onClick={this.nextPage} >
-                        More
-                    </Button>
+                {!this.state.loading && !this.state.noMoreResults &&
+                    <div className={classes.btnWrap}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            className={classes.button}
+                            onClick={this.nextPage} >
+                            More
+                        </Button>
+                    </div>
                 }
             </Fragment>
         );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch, withRouter} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider } from './components/context'; 
 
 import { handleLocalStore } from './js/helper';
@@ -14,10 +14,10 @@ import Home from './components/routes/Home';
 import Likes from './components/routes/Likes';
 import Recent from './components/routes/Recent';
 import ArticlesByTag from './components/routes/ArticlesByTag';
-import Tags from './components/routes/Tags';
+import TagList from './components/routes/TagList';
 import SearchResult from './components/routes/SearchResult';
 
-import PropTypes, { string } from 'prop-types';
+import PropTypes from 'prop-types';
 import { withStyles, Grid } from '@material-ui/core';
 
 
@@ -59,7 +59,7 @@ class App extends Component {
     let likedArticles = handleLocalStore({key: 'likes'});
     if(likedArticles) {
       likedArticles = likedArticles.split(',').map( Number );
-      console.log('likedArticles', likedArticles);
+      // console.log('likedArticles', likedArticles);
       this.setState({ likedArticles });
     }
   }
@@ -78,19 +78,8 @@ class App extends Component {
   }
 
 
-  handleSearch = searchTerm => {
-    console.log('search', this.props);
-    // history.push('/search');
-    this.setState({ searchTerm });
-  };
+  setSearchTerm = searchTerm => this.setState({ searchTerm });
   
-
-  checkLike = (nid) => {
-    const like = this.state.likedArticles.includes(nid);
-    // console.log('checkLike: %i in %o = %s', nid, this.state.likedArticles, like);
-    return like
-  };
-
 
   toggleLike = (nid) => {
     return new Promise((resolve, reject) => {
@@ -129,11 +118,9 @@ class App extends Component {
   getAppContext = () => ({
     app: {
       addRecent: this.addRecent,
-      handleSearch: this.handleSearch,
+      setSearchTerm: this.setSearchTerm,
       loading: this.loading,
-      removeNode: this.removeNode,
       toggleLike: this.toggleLike,
-      checkLike: this.checkLike,
       share: this.share,
       ...this.state,
     }
@@ -154,7 +141,7 @@ class App extends Component {
               <Grid item xs={12}>
                 <Switch>
                   <Route exact path="/" component={Home} />
-                  <Route exact path="/tags" component={Tags} />
+                  <Route exact path="/tags" component={TagList} />
                   <Route exact path="/likes" component={Likes} />
                   <Route exact path="/recent" component={Recent} />
                   <Route exact path="/about" component={About} />

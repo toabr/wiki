@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from "react-router-dom";
 
-import { getTags } from '../../js/api';
+import APIService from '../../js/APIService';
 import { withPage } from '../Page';
 import TagBtn from '../tag/TagBtn';
 
 import PropTypes from 'prop-types';
-import { withStyles, Button } from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -23,12 +22,13 @@ class TagList extends Component {
   state = {
     tags: []
   };
-  
+
   componentDidMount() {
-    getTags('', tags => {
-      this.setState({ tags });
-      this.props.ready(true);
-    });
+    APIService.getTags('') // empty string = all
+      .then(tags => {
+        this.setState({ tags });
+        this.props.ready(true);
+      })
   }
 
   render() {
@@ -43,7 +43,7 @@ class TagList extends Component {
 
     return (
       <div className={classes.wrapper} >
-          {tags}
+        {tags}
       </div>
     );
   }

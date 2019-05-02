@@ -57,7 +57,7 @@ const Searchbar = (props) => {
 
     const handleEnter = (e) => {
         if (e.key === 'Enter') {
-            props.app.handleSearch(e.target.value);
+            props.app.setSearchTerm(e.target.value);
             e.target.value = '';
             props.history.push('/search');
         }

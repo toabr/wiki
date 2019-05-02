@@ -1,54 +1,38 @@
 import React, { Component, Fragment } from 'react'
 
+import APIService from '../../js/APIService';
 import { withPage } from '../Page';
-import { getArticles } from '../../js/api';
 import ArticleList from '../article/ArticleList';
 
 
 class Likes extends Component {
     state = {
-        likedArticles: [],
         articles: [],
     }
 
     componentDidMount() {
-        // transformation to cut reference
-        this.setLikedArticles(this.props.likedArticles, () => {
-            // api request
-            const { likedArticles } = this.state;
-            if (likedArticles.length === 0) {
-                this.props.ready(false);
-            } else {
-                getArticles({ ids: likedArticles }, articles => {
+        const ids = this.props.likedArticles;
+
+        if (ids.length === 0) {
+            this.props.ready(false);
+        } else {
+            APIService.getArticles({ ids })
+                .then(articles => {
                     this.setState({ articles });
                     this.props.ready(true);
-                });
-            }
-        });
-    }
-    
-    componentDidUpdate() {
-        const newList = this.props.likedArticles;
-        const oldList = this.state.likedArticles;
-        
-        // remove unliked article from list
-        if (newList.length !== oldList.length) {
-            // the new array contains one item less then the old array
-            const articles = this.state.articles.filter(article => (newList.indexOf(Number(article.nid)) !== -1));
-            console.log('remove %i from %o', oldList.filter(id => (newList.indexOf(Number(id)) === -1))[0], oldList);
-
-            this.setState({ articles });
-            this.setLikedArticles(newList);
-
-            if (newList.length === 0) {
-                this.props.ready(false);
-            }
+                })
         }
     }
-    
-    setLikedArticles(articles, cb) {
-        const likedArticles = JSON.parse(JSON.stringify(articles));
-        this.setState({ likedArticles }, cb);
+
+    componentDidUpdate(oldProps) {
+        if (oldProps !== this.props) {
+            setTimeout(() => { // wait for ArticleMenu to unmount
+                const articles = this.state.articles.filter(a => { 
+                    return this.props.likedArticles.indexOf(Number(a.nid)) !== -1
+                });
+                this.setState({ articles });
+            }, 0);
+        }
     }
 
     render() {
@@ -56,4 +40,4 @@ class Likes extends Component {
     }
 }
 
-export default withPage(Likes, 'Likes');
+export default withPage(Likes, 'Stars');

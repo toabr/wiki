@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { loadImage } from '../js/api';
+import APIService from '../js/APIService';
 import logo from '../img/logo.jpg';
 
 import { withStyles, Dialog, DialogContent, Slide, LinearProgress, Zoom } from '@material-ui/core';
@@ -42,9 +42,8 @@ class SplashScreen extends Component {
         const minLiveTime = (this.props.minLiveTime) ? this.props.minLiveTime : 800;
         // console.log('Splash minLiveTime', minLiveTime);
 
-        loadImage(logo)
+        APIService.loadImage(logo)
             .then(img => {
-                console.log('logo ready', img);
                 this.setState({ logoReady: true });
                 setTimeout(() => {
                     this.setState({ canDie: true });

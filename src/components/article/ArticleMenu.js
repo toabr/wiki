@@ -34,9 +34,10 @@ class ArticleMenu extends Component {
     }
 
     componentDidMount() {
-        this.setState({ liked: this.props.app.checkLike(this.state.nid) });
+        const liked = this.props.app.likedArticles.includes(this.state.nid);
+        this.setState({ liked });
     }
-    
+
     handleClick = event => this.setState({ anchorEl: event.currentTarget });
     
     handleClose = () => this.setState({ anchorEl: null });
@@ -61,7 +62,7 @@ class ArticleMenu extends Component {
 
         // console.log('like', this.props.likedArticles.includes(this.props.nid) );
         const likeIcon = (liked) ? <StarIcon /> : <StarBorderIcon />;
-        const likeText = (liked) ? "Unlike" : "Like";
+        const likeText = (liked) ? "Unstar" : "Star";
 
         return (
             <Fragment>

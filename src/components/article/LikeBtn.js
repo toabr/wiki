@@ -24,7 +24,8 @@ class LikeBtn extends Component {
     }
 
     componentDidMount() {
-        this.setState({ liked: this.props.app.checkLike(this.state.nid) });
+        const liked = this.props.app.likedArticles.includes(this.state.nid);
+        this.setState({ liked });
     }
 
     handleClick = () => {

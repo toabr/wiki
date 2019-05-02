@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
+import APIService from '../../js/APIService';
 import { withPage } from '../Page';
-import { getArticles } from '../../js/api';
 import ArticleList from '../article/ArticleList';
 
 
@@ -11,15 +11,17 @@ class Recent extends Component {
     }
 
     componentDidMount() {
-        if (this.props.recentArticles.length === 0) {
+        const ids = this.props.recentArticles;
+
+        if (ids.length === 0) {
             this.props.ready(false);
-            return;
+        } else {
+            APIService.getArticles({ ids })
+                .then(articles => {
+                    this.setState({ articles });
+                    this.props.ready(true);
+                })
         }
-        
-        getArticles({ids: this.props.recentArticles}, articles => {
-            this.setState({ articles });
-            this.props.ready(true);
-        });
     }
 
     render() {
@@ -27,4 +29,4 @@ class Recent extends Component {
     }
 }
 
-export default withPage(Recent, 'history');
+export default withPage(Recent, 'History');
