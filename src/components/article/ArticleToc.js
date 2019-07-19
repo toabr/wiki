@@ -20,6 +20,9 @@ const styles = theme => ({
         '&:nth-child(even)': {
             background: theme.palette.grey[200],
         },
+        '&:hover': {
+            background: theme.palette.grey[300],
+        },
     },
     linkText: {
         padding: 0,
