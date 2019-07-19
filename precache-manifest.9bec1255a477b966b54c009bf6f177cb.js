@@ -1,19 +1,19 @@
 self.__precacheManifest = [
   {
-    "revision": "2c598783bb242a49697c",
-    "url": "/wiki/static/js/main.65482c2a.chunk.js"
+    "revision": "6695ac137ba4efd4db22",
+    "url": "/wiki/static/js/main.7bbeae3c.chunk.js"
   },
   {
     "revision": "2117087dc213cefe10b0",
     "url": "/wiki/static/js/runtime~main.bbc02b0e.js"
   },
   {
-    "revision": "5118876d82c73957f47e",
+    "revision": "925e768c63c7d655cf5e",
     "url": "/wiki/static/css/2.b90e442d.chunk.css"
   },
   {
-    "revision": "5118876d82c73957f47e",
-    "url": "/wiki/static/js/2.7aa36421.chunk.js"
+    "revision": "925e768c63c7d655cf5e",
+    "url": "/wiki/static/js/2.d5736afd.chunk.js"
   },
   {
     "revision": "215143158a2c304310ec731118667be0",
@@ -116,7 +116,7 @@ self.__precacheManifest = [
     "url": "/wiki/static/media/roboto-latin-900italic.bc833e72.woff"
   },
   {
-    "revision": "627a93535aec168ab667dcf87f88f736",
+    "revision": "aba65920587cd34834f80b711a41db94",
     "url": "/wiki/index.html"
   }
 ];
